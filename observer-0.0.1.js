@@ -55,7 +55,7 @@ Observer.prototype.set = function(){
       changeProp(prop, objChanges[prop]);
     }
 
-  } else if(typeof firstArg === 'string'){
+  } else if(typeof firstArg === 'string' || typeof firstArg === 'number'){
     //single change
     changeProp(firstArg, arguments[1]);
   }
@@ -130,7 +130,7 @@ Observer.prototype.triggerEvent = function(event, data){
   var listeners = this.listeners;
 
   if(listeners[event]){
-    this.listeners[event](data);
+    listeners[event](data);
   }
 
   return this;
