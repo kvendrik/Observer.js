@@ -1,3 +1,8 @@
+/*
+* Observer.js - A teeny tiny library to listen for object changes
+* http://github.com/kvendrik/Observer.js
+*/
+
 var Observer = function(obj){
   this[0] = obj;
   this.listeners = {};
