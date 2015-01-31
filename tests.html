@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Observer Tests</title>
+</head>
+<body>
+
+<script src="observer-0.1.0.js"></script>
+<script>
+
+var deepNestedObject = new Observer({
+    name: {
+        first: {
+            main: 'Koen',
+            middle: 'Constant'
+        },
+        last: 'Vendrik'
+    },
+    favorites: {
+        first: 'JavaScript',
+        second: 'Ruby',
+        third: 'Python',
+        fourth: 'SASS',
+        fifth: 'Java'
+    },
+    city: {
+        nijmegen: {
+            province: {
+                name: 'Gelderland',
+                abbreviation: 'GL'
+            },
+        }
+    }
+});
+
+deepNestedObject.on('delete', function(details){
+    console.log(details);
+});
+
+deepNestedObject.set('name.first.main', 'Matti');
+deepNestedObject.set('city.amsterdam.province.name', 'Amsterdam');
+
+deepNestedObject.set({
+    'name.first.main': 'Koen',
+    'city.nijmegen.province.name': 'Gelderlnd',
+    name: {
+        first: {
+            middle: 'Coolio'
+        }
+    }
+});
+
+deepNestedObject.set('name.first.{main,middle}', 22);
+deepNestedObject.get('name.first.{main,middle}');
+deepNestedObject.delete('name.first.main');
+console.log(deepNestedObject.get('favorites.{second..fifth}'));
+console.log(deepNestedObject.get('favorites.*'));
+console.log(deepNestedObject.get('city.nijmegen.province.*'));
+
+console.log(deepNestedObject[0]);
+</script>
+</body>
+</html>
