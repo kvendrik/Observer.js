@@ -68,5 +68,5 @@ obj.get('favorites.posts.recent.friends');
 //{ robert:{ age: 20 } }
 
 obj.get('favorites.posts.recent.{friends,others}');
-//["JavaScript", "Java"]
+//[{ robert: { age: 20 } }, { matti: { age: 19 } }]
 ```

@@ -43,15 +43,9 @@ obj.set('name.first', 'Matti');
 obj.set('favorites.{first,second}', 'SASS');
 obj.set({
     favorites: {
-        first: 'SASS'
+        fifth: 'SASS'
     }
 });
-
-console.log(obj.get('favorites.posts.recent.friends'));
-//{ robert:{ age: 20 } }
-
-console.log(obj.get('favorites.posts.recent.{friends,others}'));
-//[{ robert: { age: 20 } }, { matti: { age: 19 } }]
 
 </script>
 </body>
