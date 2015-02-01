@@ -12,6 +12,12 @@ var Observer = function(obj){
   this.listeners = {};
 };
 
+/**
+ * set one or more properties to a new value
+ * @param   {String | Number | Object}  name of property (accepts template string) you would like to change or object with changes
+ * @param   {String}                    in case param 1 is a string: the value you'd like to change the property to
+ * @return  {Object}                    returns `this`
+ */
 Observer.prototype.set = function(){
     var obj = this[0],
       	firstArg = arguments[0],
@@ -65,16 +71,16 @@ Observer.prototype.set = function(){
     };
 
     var applyChange = function(propPath, newVal){
-        var props = self._parseBraceExpansions(propPath);
+        var paths = self._parseBraceExpansions(propPath);
 
-        if(props.length > 1){
-            for(var i = 0, l = props.length; i < l; i++){
-                changeProp(props[i], newVal);
+        if(paths.length > 1){
+            for(var i = 0, l = paths.length; i < l; i++){
+                changeProp(paths[i], newVal);
             }
         } else {
             //call function with
             //path to property and value to change it to
-            changeProp(props[0], newVal);
+            changeProp(paths[0], newVal);
         }
     };
 
@@ -119,16 +125,16 @@ Observer.prototype.set = function(){
     //if there were indeed changes
 
     //trigger the global change event
-    this.triggerEvent('change', changes.add.concat(changes.update));
+    this._triggerEvent('change', changes.add.concat(changes.update));
 
     if(changes.add.length > 0){
       //if there were additions, trigger the add event
-      this.triggerEvent('add', changes.add);
+      this._triggerEvent('add', changes.add);
     }
 
     if(changes.update.length > 0){
       //if there were updates, trigger the add event
-      this.triggerEvent('update', changes.update);
+      this._triggerEvent('update', changes.update);
     }
 
   }
@@ -136,107 +142,14 @@ Observer.prototype.set = function(){
   return this;
 };
 
-Observer.prototype._parseObjectPath = function(objectPath){
-    var obj = this[0],
-    	props = objectPath.split('.');
-
-    if(props.length > 1){
-        var currProp = obj,
-        	actualPropsLength = props.length-1;
-
-        //deep nested property, change object
-        for(var i = 0; i < actualPropsLength; i++){
-            var curr = currProp[props[i]];
-            if(curr === undefined){
-                currProp[props[i]] = {};
-            }
-            currProp = currProp[props[i]];
-        }
-
-        return { parentObj: currProp, prop: props[actualPropsLength]};
-    } else {
-        return { parentObj: obj, prop: objectPath };
-    }
-};
-
-Observer.prototype._parsePropPath = function(propPath){
-	//parse prop path and return new array of parsed object paths
-	//these can for example contain brace expansions
-	var results = [];
-
-	var parsedWildCards = this._parseWildcards(propPath);
-	for(var i = 0; i < parsedWildCards.length; i++){
-		results = results.concat(this._parseBraceExpansions(parsedWildCards[i]));
-	}
-
-	return results;
-};
-
-Observer.prototype._parseWildcards = function(propPath){
-
-	if(propPath.indexOf('*') !== -1){
-		var results = [],
-            parts = propPath.split('*'),
-            key = parts[0].substring(0, parts[0].length-1),
-            pathDetails = this._parseObjectPath(key),
-            keys = Object.keys(pathDetails.parentObj[pathDetails.prop]);
-
-        for(var i = 0; i < keys.length; i++){
-            results.push(propPath.replace('*', keys[i]));
-        }
-
-		return results;
-	} else {
-		return [propPath];
-	}
-};
-
-Observer.prototype._parseBraceExpansions = function(str){
-
-    if(/\{([^\}]+)\}/.test(str)){
-        //parse brace expansion
-        var match = str.match(/\{([^\}]+)\}/),
-            results = [];
-
-        if(match !== null){
-        	if(match[0].indexOf(',') !== -1){
-
-	            var parts = match[1].split(',');
-	            for(var k = 0, l = parts.length; k < l; k++){
-	                results.push(str.replace(match[0], parts[k].trim()));
-	            }
-
-            } else if(match[0].indexOf('..') !== -1){
-
-            	var parts = match[1].split('..'),
-            		keys = Object.keys(this._parseObjectPath(str.replace(/\{([^\}]+)\}/, '')).parentObj),
-            		inserting = false;
-
-            	for(var k = 0, l = keys.length; k < l; k++){
-            		var curr = keys[k];
-	                if(curr === parts[0]){
-	                	inserting = true;
-	                }
-	                if(inserting){
-	                	results.push(str.replace(match[0], curr.trim()));
-	                }
-	                if(curr === parts[1]){
-	                	inserting = false;
-	                }
-	            }
-
-            }
-        }
-
-        return results;
-    } else {
-        return [str];
-    }
-};
-
+/**
+ * get a property from the object
+ * @param   {String}  propPath Path to the property you'd like to get, accepts template string
+ * @return  {*}       Value of the property specified in propPath
+ */
 Observer.prototype.get = function(propPath){
     var obj = this[0],
-        paths = this._parsePropPath(propPath),
+        paths = this._parseBraceExpansions(propPath),
         pathsLength;
 
     var getValFromPath = function(propPath){
@@ -270,6 +183,11 @@ Observer.prototype.get = function(propPath){
     }
 };
 
+/**
+ * delete one or multiple properties from the object
+ * @param   {String}  propPath  path to property you'd like to remove
+ * @return  {Object}            `this`
+ */
 Observer.prototype.delete = function(){
   	var originalObj = this[0],
       	changes = [],
@@ -311,19 +229,103 @@ Observer.prototype.delete = function(){
   if(changes.length > 0){
     //if there were changes
 
-    this.triggerEvent('change', changes);
-    this.triggerEvent('delete', changes);
+    this._triggerEvent('change', changes);
+    this._triggerEvent('delete', changes);
   }
 
   return this;
 };
 
+/**
+ * listen for the firing of an event
+ * @param   {String}    event     name of the event you'd like to listen for
+ * @param   {Function}  callback  function to be invoked wen the event fires
+ * @return  {Object}              `this`
+ */
 Observer.prototype.on = function(event, callback){
   this.listeners[event] = callback;
   return this;
 };
 
-Observer.prototype.triggerEvent = function(event, data){
+/**
+ * parse an object path
+ * @param   {String}  objectPath  a path to the property you'd like to receive, nested props seperated by dots
+ * @return  {Object}              object with the parent of the property and the property value
+ */
+Observer.prototype._parseObjectPath = function(objectPath){
+    var obj = this[0],
+        props = objectPath.split('.');
+
+    if(props.length > 1){
+        var currProp = obj,
+            actualPropsLength = props.length-1;
+
+        //deep nested property, change object
+        for(var i = 0; i < actualPropsLength; i++){
+            var curr = currProp[props[i]];
+            if(curr === undefined){
+                currProp[props[i]] = {};
+            }
+            currProp = currProp[props[i]];
+        }
+
+        return { parentObj: currProp, prop: props[actualPropsLength]};
+    } else {
+        return { parentObj: obj, prop: objectPath };
+    }
+};
+
+/**
+ * parse brace expansions in an property path
+ * @param  {[type]} str [description]
+ * @return {[type]}     [description]
+ */
+Observer.prototype._parseBraceExpansions = function(str){
+
+    if(/\{([^\}]+)\}/.test(str)){
+
+        var parseExpansionInStr = function(expansion, str){
+            //parse brace expansion
+            var match = expansion.match(/\{([^\}]+)\}/),
+                results = [];
+
+            if(match !== null && expansion.indexOf(',') !== -1){
+
+                var parts = match[1].split(','),
+                    curr;
+
+                for(var k = 0, l = parts.length; k < l; k++){
+                    curr = parts[k].trim();
+
+                    //add path with part to results
+                    results.push(str.replace(expansion, curr));
+                }
+
+            }
+
+            return results;
+        };
+
+        var expansions = str.match(/\{([^\}]+)\}/g),
+            results = [];
+
+        for(var i = 0, l = expansions.length; i < l; i++){
+           results = results.concat(parseExpansionInStr(expansions[i], str));
+        }
+
+        return results;
+    } else {
+        return [str];
+    }
+};
+
+/**
+ * trigger an event using the specified data
+ * @param   {String}  event  name of the event you'd like to trigger
+ * @param   {Object}  data   the event details
+ * @return  {Object}         `this`
+ */
+Observer.prototype._triggerEvent = function(event, data){
   var listeners = this.listeners;
 
   if(listeners[event]){

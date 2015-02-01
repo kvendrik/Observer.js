@@ -11,11 +11,18 @@
 
 var deepNestedObject = new Observer({
     name: {
-        first: {
+        firstname: {
             main: 'Koen',
             middle: 'Constant'
         },
-        last: 'Vendrik'
+        lastname: 'Vendrik'
+    },
+    namelast: {
+        firstname: {
+            main: 'Matti',
+            middle: 'van de'
+        },
+        lastname: 'Weem'
     },
     favorites: {
         first: 'JavaScript',
@@ -34,29 +41,7 @@ var deepNestedObject = new Observer({
     }
 });
 
-deepNestedObject.on('delete', function(details){
-    console.log(details);
-});
-
-deepNestedObject.set('name.first.main', 'Matti');
-deepNestedObject.set('city.amsterdam.province.name', 'Amsterdam');
-
-deepNestedObject.set({
-    'name.first.main': 'Koen',
-    'city.nijmegen.province.name': 'Gelderlnd',
-    name: {
-        first: {
-            middle: 'Coolio'
-        }
-    }
-});
-
-deepNestedObject.set('name.first.{main,middle}', 22);
-deepNestedObject.get('name.first.{main,middle}');
-deepNestedObject.delete('name.first.main');
-console.log(deepNestedObject.get('favorites.{second..fifth}'));
-console.log(deepNestedObject.get('favorites.*'));
-console.log(deepNestedObject.get('city.nijmegen.province.*'));
+console.log(deepNestedObject.get('name.{first,last}name'));
 
 console.log(deepNestedObject[0]);
 </script>
