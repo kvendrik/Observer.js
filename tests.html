@@ -9,41 +9,50 @@
 <script src="observer-0.1.0.js"></script>
 <script>
 
-var deepNestedObject = new Observer({
+var obj = new Observer({
     name: {
-        firstname: {
-            main: 'Koen',
-            middle: 'Constant'
-        },
-        lastname: 'Vendrik'
+        first: 'Koen',
+        last: 'Vendrik'
     },
-    namelast: {
-        firstname: {
-            main: 'Matti',
-            middle: 'van de'
-        },
-        lastname: 'Weem'
-    },
+    age: 19,
+    city: 'Nijmegen',
     favorites: {
-        first: 'JavaScript',
-        second: 'Ruby',
-        third: 'Python',
-        fourth: 'SASS',
-        fifth: 'Java'
-    },
-    city: {
-        nijmegen: {
-            province: {
-                name: 'Gelderland',
-                abbreviation: 'GL'
-            },
+        posts: {
+            recent: {
+                friends: {
+                    robert: {
+                        age: 20
+                    }
+                },
+                others: {
+                    matti: {
+                        age: 19
+                    }
+                }
+            }
         }
     }
 });
 
-console.log(deepNestedObject.get('name.{first,last}name'));
+obj.on('change', function(changes){
+    console.log(changes);
+});
 
-console.log(deepNestedObject[0]);
+obj.set('age', 20);
+obj.set('name.first', 'Matti');
+obj.set('favorites.{first,second}', 'SASS');
+obj.set({
+    favorites: {
+        first: 'SASS'
+    }
+});
+
+console.log(obj.get('favorites.posts.recent.friends'));
+//{ robert:{ age: 20 } }
+
+console.log(obj.get('favorites.posts.recent.{friends,others}'));
+//[{ robert: { age: 20 } }, { matti: { age: 19 } }]
+
 </script>
 </body>
 </html>

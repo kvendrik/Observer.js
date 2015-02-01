@@ -31,20 +31,22 @@ var obj = new Observer({
         first: 'Koen',
         last: 'Vendrik'
     },
-    favorites: {
-        first: 'JavaScript',
-        second: 'Ruby',
-        third: 'Python',
-        fourth: 'SASS',
-        fifth: 'Java'
-    },
     age: 19,
-    city: {
-        nijmegen: {
-            province: {
-                name: 'Gelderland',
-                abbreviation: 'GL'
-            },
+    city: 'Nijmegen',
+    favorites: {
+        posts: {
+            recent: {
+                friends: {
+                    robert: {
+                        age: 20
+                    }
+                },
+                others: {
+                    matti: {
+                        age: 19
+                    }
+                }
+            }
         }
     }
 });
@@ -53,22 +55,18 @@ obj.on('change', function(changes){
     console.log(changes);
 });
 
-obj[0].name.on('change', function(changes){
-    console.log('Name change: '+JSON.stringify(changes));
-});
-
-obj.set({ age: 20 });
-obj.set({ 'name.first': 'Matti' });
-obj.set({ 'favorites.{first,second}', 'SASS' });
+obj.set('age', 20);
+obj.set('name.first', 'Matti');
+obj.set('favorites.{first,second}', 'SASS');
 obj.set({
     favorites: {
         first: 'SASS'
     }
 });
 
-obj.get('favorites.{first..fifth}');
-//["JavaScript", "Ruby", "Python", "SASS", "Java"]
+obj.get('favorites.posts.recent.friends');
+//{ robert:{ age: 20 } }
 
-obj.get('favorites.{first,fifth}');
+obj.get('favorites.posts.recent.{friends,others}');
 //["JavaScript", "Java"]
 ```

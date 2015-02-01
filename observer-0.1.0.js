@@ -284,36 +284,42 @@ Observer.prototype._parseBraceExpansions = function(str){
 
     if(/\{([^\}]+)\}/.test(str)){
 
-        var parseExpansionInStr = function(expansion, str){
+        var parseExpansionInStr = function(expansion, strs){
             //parse brace expansion
             var match = expansion.match(/\{([^\}]+)\}/),
                 results = [];
 
-            if(match !== null && expansion.indexOf(',') !== -1){
+            if(match !== null){
 
-                var parts = match[1].split(','),
-                    curr;
+                for(var i = 0; i < strs.length; i++){
+                    str = strs[i];
 
-                for(var k = 0, l = parts.length; k < l; k++){
-                    curr = parts[k].trim();
+                    var parts = match[1].split(','),
+                        curr;
 
-                    //add path with part to results
-                    results.push(str.replace(expansion, curr));
+                    for(var k = 0, l = parts.length; k < l; k++){
+                        curr = parts[k].trim();
+
+                        //add path with part to results
+                        results.push(str.replace(expansion, curr));
+                    }
+
                 }
 
             }
+
 
             return results;
         };
 
         var expansions = str.match(/\{([^\}]+)\}/g),
-            results = [];
+            lastParsedStrs = [str];
 
         for(var i = 0, l = expansions.length; i < l; i++){
-           results = results.concat(parseExpansionInStr(expansions[i], str));
+            lastParsedStrs = parseExpansionInStr(expansions[i], lastParsedStrs);
         }
 
-        return results;
+        return lastParsedStrs;
     } else {
         return [str];
     }
