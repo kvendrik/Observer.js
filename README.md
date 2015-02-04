@@ -71,10 +71,15 @@ obj.get('favorites.posts.recent.{friends,others}');
 //[{ robert: { age: 20 } }, { matti: { age: 19 } }]
 ```
 
-### Tips & Tricks
+## Performance
+A little benchmarking for your consideration:
+
+* http://jsperf.com/angular-watch-vs-observer/2
+
+## Tips & Tricks
 Next to all the two-way data binding awesomeness Observer brings there are also some other neat tricks I like to use Observer for.
 
-#### Path checking
+### Path checking
 Using the `get` method you can easily check if a deeply nested property exists.
 
 So instead of:
@@ -87,7 +92,7 @@ you can use:
 if(obj.get('favorites.friends.count'))
 ```
 
-#### Quickly setting deep properties
+### Quickly setting deep properties
 When using the `set` method Observer will create an empty object for any part of the path that doesn't exists yet.
 
 So say you have this object:
