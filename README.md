@@ -74,6 +74,7 @@ obj.get('favorites.posts.recent.{friends,others}');
 ## Performance
 A little benchmarking for your consideration:
 
+* http://jsperf.com/angular-watch-vs-observer/1
 * http://jsperf.com/angular-watch-vs-observer/2
 
 ## Tips & Tricks
