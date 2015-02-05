@@ -5,12 +5,8 @@ Not browser tested yet, but let me know what you think. :)
 ### Simple
 ##### Basic usage example.
 
-\#1. Create a new Observer instance:
-```
-var obj = new Observer({ name: 'Koen', age: 19 });
-```
-
-\#2. Use its awesomeness:
+1. Create a new `Observer` instance <br>`var obj = new Observer({ name: 'Koen', age: 19 });`
+2. Use its awesomeness:
 ```
 obj.on('change', function(details){
    //any change
