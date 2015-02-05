@@ -4,19 +4,29 @@ Not browser tested yet, but let me know what you think. :)
 
 ### Simple
 ##### Basic usage example.
+
+1. Create a new Observer instance:
 ```
-var obj = new Observer({ name: 'Koen', age: 19 })
-.on('change', function(changes){
-   console.log('Changes: '+JSON.stringify(changes));
+var obj = new Observer({ name: 'Koen', age: 19 });
+```
+
+2. Use its awesomeness:
+```
+obj.on('change', function(details){
+   //any change
+   console.log(details);
 })
-.on('update', function(changes){
-   console.log('Updates: '+JSON.stringify(changes));
+.on('update', function(details){
+   //updates
+   console.log(details);
 })
-.on('add', function(changes){
-   console.log('Additions: '+JSON.stringify(changes));
+.on('add', function(details){
+   //additions
+   console.log(details);
 })
-.on('delete', function(changes){
-   console.log('Deleted: '+JSON.stringify(changes));
+.on('delete', function(details){
+   //delete
+   console.log(details);
 })
 .set({ name: 'John', age: 20, city: 'Nijmegen' })
 .set('name', 'Doe')
@@ -70,12 +80,6 @@ obj.get('favorites.posts.recent.friends');
 obj.get('favorites.posts.recent.{friends,others}');
 //[{ robert: { age: 20 } }, { matti: { age: 19 } }]
 ```
-
-## Performance
-A little benchmarking for your consideration:
-
-* http://jsperf.com/angular-watch-vs-observer/1
-* http://jsperf.com/angular-watch-vs-observer/2
 
 ## Tips & Tricks
 Next to all the two-way data binding awesomeness Observer brings there are also some other neat tricks I like to use Observer for.
