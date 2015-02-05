@@ -1,4 +1,7 @@
-Not browser tested yet, but let me know what you think. :)
+Observer.js
+===========
+
+#### A small (~3kb) two-way data binding library.
 
 ## Usage
 
